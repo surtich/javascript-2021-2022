@@ -1,10 +1,10 @@
 function map<A, B>(xs: A[], f: (x:A) => B): B[] {
-    var ys: B[] = [];
-    for (var i = 0; i < xs.length; i++) {
-      ys.push(f(xs[i]));
-    }
-    return ys;
+  var ys: B[] = [];
+  for (var i = 0; i < xs.length; i++) {
+    ys.push(f(xs[i]));
   }
+  return ys;
+}
 
 
   function filter<A>(xs:A[], f:(x: A) => boolean): A[] {
@@ -55,6 +55,17 @@ function reduce<A, B>(xs: A[], f: (acc: B , x: A ) => B, init: B): B {
     acc = f(acc, xs[i]);
   }
   return acc;
+}
+
+function map_with_reduce<A, B>(xs: A[], f: (x:A) => B): B[] {
+  return reduce(xs, (ys, x) => [...ys, f(x)], []);
+}
+
+
+function compose2<A, B, C>(g: (y: B) => C, f: (x: A) => B): (x: A) => C {
+  return function(x) {
+    return g(f(x));
+  };
 }
 
   

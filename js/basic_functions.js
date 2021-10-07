@@ -179,5 +179,66 @@ function map_recur(xs, f) {
   return [f(head), ...map_recur(tail, f)];
 }
 
+function map_with_reduce(xs, f) {
+  return reduce(xs, (ys, x) => [...ys, f(x)], []);
+}
+
 
 console.log(map_recur([1, 2, 3], double));
+console.log(map_with_reduce([1, 2, 3], double));
+
+
+console.log([1, 2, 3, 4].map(x => [x * 2]));
+
+
+
+
+function inc(x) {
+  return x + 1;
+}
+
+function triple(x) {
+  return x * 3;
+}
+
+var triple_then_inc = function (x) {
+  var y = triple(x);
+  var z = inc(y);
+  return z;
+};
+
+function compose2(g, f) {
+  return function (x) {
+    return g(f(x));
+  };
+}
+
+function id(x) {
+  return x;
+}
+
+function compose(...fs) {
+  fs = [...fs, id];
+  return function (x) {
+    var result = x;
+    for (var i = fs.length - 1; i >= 0; i--) {
+      var f = fs[i];
+      result = f(result);
+    }
+    return result;
+  }
+}
+
+var pipe = (...fs) => compose(...fs.reverse());
+
+var triple_then_inc2 = compose2(inc, triple);
+
+console.log(inc(triple(5)));
+console.log(triple_then_inc(5));
+console.log(triple_then_inc2(5));
+console.log(compose2(triple, compose2(inc, double))(7));
+console.log(compose(triple, inc, double)(7));
+console.log(compose()(7));
+console.log(pipe(triple, inc, double)(7));
+
+
