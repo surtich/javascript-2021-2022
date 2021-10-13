@@ -57,6 +57,22 @@ function reduce<A, B>(xs: A[], f: (acc: B , x: A ) => B, init: B): B {
   return acc;
 }
 
+function reduceRight<A, B>(xs: A[], f: (acc: B , x: A ) => B, init: B): B {
+  if (xs.length === 0) {
+    return init;
+  }
+  var [head, ...tail] = xs;
+  return f(reduceRight(tail, f, init), head);
+}
+
+function reduceLeft<A, B>(xs: A[], f: (acc: B , x: A ) => B, init: B): B {
+  if (xs.length === 0) {
+    return init;
+  }
+  var [head, ...tail] = xs;
+  return reduceLeft(tail, f, f(init, head));
+}
+
 function map_with_reduce<A, B>(xs: A[], f: (x:A) => B): B[] {
   return reduce(xs, (ys, x) => [...ys, f(x)], []);
 }

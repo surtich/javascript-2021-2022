@@ -241,4 +241,62 @@ console.log(compose(triple, inc, double)(7));
 console.log(compose()(7));
 console.log(pipe(triple, inc, double)(7));
 
+function some(xs, f) {
+  return reduce(xs, (acc, x) => acc || f(x), false);
+}
 
+function reduceRight(xs, f, init) {
+  if (xs.length === 0) {
+    return init;
+  }
+  var [head, ...tail] = xs;
+  return f(reduceRight(tail, f, init), head);
+}
+function reduceLeft(xs, f, init) {
+  if (xs.length === 0) {
+    return init;
+  }
+  var [head, ...tail] = xs;
+  return reduceLeft(tail, f, f(init, head));
+}
+
+console.log(some([1, 2, 5], isPair));
+console.log(reduceRight([1, 2, 3], add, 0));
+console.log(reduceLeft([1, 2, 3], add, 0));
+
+console.log(reduceLeft(new Array(100).fill(0).map((_, i) => i + 1), add, 0));
+
+function someRight(xs, f) {
+  return reduceRight(xs, (acc, x) => acc || f(x), false);
+}
+
+function isPair2(number) {
+  return number % 2 == 0;
+}
+
+
+console.log(someRight([1, 3, 5, 6, 7, 9, 10], isPair2));
+
+function curryMap(f) {
+  return function (xs) {
+    var ys = [];
+    for (var i = 0; i < xs.length; i++) {
+      ys.push(f(xs[i]));
+    }
+    return ys;
+  }
+}
+
+function curryFilter(f) {
+  return function (xs) {
+    var ys = [];
+    for (var i = 0; i < xs.length; i++) {
+      if (f(xs[i])) {
+        ys.push(xs[i]);
+      }
+    }
+    return ys;
+  }
+}
+
+console.log(compose2(curryFilter(isPair), curryMap(inc))([1, 2, 3]));

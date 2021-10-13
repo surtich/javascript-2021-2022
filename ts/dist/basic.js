@@ -43,6 +43,20 @@ function reduce(xs, f, init) {
     }
     return acc;
 }
+function reduceRight(xs, f, init) {
+    if (xs.length === 0) {
+        return init;
+    }
+    var head = xs[0], tail = xs.slice(1);
+    return f(reduceRight(tail, f, init), head);
+}
+function reduceLeft(xs, f, init) {
+    if (xs.length === 0) {
+        return init;
+    }
+    var head = xs[0], tail = xs.slice(1);
+    return reduceLeft(tail, f, f(init, head));
+}
 function map_with_reduce(xs, f) {
     return reduce(xs, function (ys, x) { return __spreadArrays(ys, [f(x)]); }, []);
 }
