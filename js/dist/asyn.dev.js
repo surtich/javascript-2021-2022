@@ -171,11 +171,11 @@ function asyncMultiCompose() {
     };
   }
 
+  var f = fs[fs.length - 1];
+  var gs = fs.slice(0, fs.length - 1);
+  var g = asyncMultiCompose.apply(void 0, _toConsumableArray(gs));
   return function (x, cbk) {
-    var f = fs[fs.length - 1];
-    var gs = fs.slice(0, fs.length - 1);
     f(x, function (y) {
-      g = asyncMultiCompose.apply(void 0, _toConsumableArray(gs));
       g(y, cbk);
     });
   };

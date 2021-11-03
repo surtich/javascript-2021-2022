@@ -127,13 +127,15 @@ function asyncCompose(asyncG, asyncF) {
 function asyncMultiCompose(...fs) {
     if (fs.length === 0) {
         return (x, cbk) => cbk(x)
+
     }
 
+    let f = fs[fs.length - 1];
+    let gs = fs.slice(0, fs.length - 1)
+    let g = asyncMultiCompose(...gs)
+
     return function (x, cbk) {
-        let f = fs[fs.length - 1];
-        let gs = fs.slice(0, fs.length - 1)
         f(x, function (y) {
-            g = asyncMultiCompose(...gs)
             g(y, cbk);
         })
 
