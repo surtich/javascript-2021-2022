@@ -103,7 +103,7 @@ function asyncInc(x, cbk) {
 }
 
 function asynDouble(x, cbk) {
-    asyncProduct(x, 2, cbk);
+    asyncProduct(x, 2, cbk)
 }
 
 
@@ -111,4 +111,38 @@ function asynDouble(x, cbk) {
 
 // asyncCompose(...asyncF)
 
-// asyncMap([1,2,3], asyncCompose(asyncInc, asyncInc, asynDouble)) => [4,6,8] 
+// asyncMap([1,2,3], asyncCompose(asyncInc, asyncInc, asynDouble)) 
+
+
+
+
+function asyncCompose(asyncG, asyncF) {
+    return function (x, cbk) {
+        asyncF(x, function (y) {
+            asyncG(y, cbk)
+        })
+    }
+}
+
+function asyncMultiCompose(...fs) {
+    if (fs.length === 0) {
+        return (x, cbk) => cbk(x)
+    }
+
+    return function (x, cbk) {
+        let f = fs[fs.length - 1];
+        let gs = fs.slice(0, fs.length - 1)
+        f(x, function (y) {
+            g = asyncMultiCompose(...gs)
+            g(y, cbk);
+        })
+
+    }
+}
+
+const z = asyncMultiCompose(asyncInc, asyncInc, asynDouble)
+
+z(4, function (result) {
+    console.log(">>>>>", result);
+})
+
