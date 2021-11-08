@@ -21,7 +21,6 @@ const promiseAdd = function (x, y) {
 const promiseInc = x => promiseAdd(1, x);
 const promiseDouble = x => promiseProduct(2, x);
 
-
 const promiseProduct = function (x, y) {
     return new Promise(function (resolve, reject) {
         setTimeout(function () {
@@ -111,8 +110,36 @@ Promise.all([1, 2, 3].map(function (x) {
 console.log(Promise.resolve(4444444))
 
 
-// promiseReduce([1,2,3], promiseAdd, 0) -> Promise(6)
-// promiseCompose([promiseInc, promiseDouble, promiseDouble]) 
+function promiseReduce(xs, promiseReducer, init) {
+    let promiseResult = Promise.resolve(init);
+    for (let x of xs) {
+        promiseResult = promiseResult.then(function (result) {
+            return promiseReducer(result, x);
+        });
+    }
+    return promiseResult;
+}
 
-// promiseCompose([promiseInc, promiseDouble, promiseDouble])(1) -> Promise(5)
+function promiseCompose(...fs) {
+    return function (x) {
+        return fs.reduceRight(function (promiseX, f) {
+            return promiseX.then(function (y) {
+                return f(y);
+            })
+        }, Promise.resolve(x));
+    }
+}
+
+
+
+promiseReduce([1, 2, 3], promiseAdd, 0).then(function (result) {
+    console.log("promiseReduce:", result)
+})
+// promiseCompose([promiseInc, promiseDouble, promiseDouble])
+
+promiseCompose(promiseInc, promiseDouble, promiseDouble)(1).then(function (result) {
+    console.log("promiseCompose", result);
+})
+
+
 

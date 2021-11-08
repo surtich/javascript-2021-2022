@@ -94,6 +94,61 @@ Promise.all([1, 2, 3].map(function (x) {
 })).then(function (results) {
   console.log(results);
 });
-console.log(Promise.resolve(4444444)); // promiseReduce([1,2,3], promiseAdd, 0) -> Promise(6)
-// promiseCompose([promiseInc, promiseDouble, promiseDouble]) 
-// promiseCompose([promiseInc, promiseDouble, promiseDouble])(1) -> Promise(5)
+console.log(Promise.resolve(4444444));
+
+function promiseReduce(xs, promiseReducer, init) {
+  var promiseResult = Promise.resolve(init);
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    var _loop = function _loop() {
+      var x = _step.value;
+      promiseResult = promiseResult.then(function (result) {
+        return promiseReducer(result, x);
+      });
+    };
+
+    for (var _iterator = xs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      _loop();
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+        _iterator["return"]();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+
+  return promiseResult;
+}
+
+function promiseCompose() {
+  for (var _len = arguments.length, fs = new Array(_len), _key = 0; _key < _len; _key++) {
+    fs[_key] = arguments[_key];
+  }
+
+  return function (x) {
+    return fs.reduceRight(function (promiseX, f) {
+      return promiseX.then(function (y) {
+        return f(y);
+      });
+    }, Promise.resolve(x));
+  };
+}
+
+promiseReduce([1, 2, 3], promiseAdd, 0).then(function (result) {
+  console.log("promiseReduce:", result);
+}); // promiseCompose([promiseInc, promiseDouble, promiseDouble])
+
+promiseCompose(promiseInc, promiseDouble, promiseDouble)(1).then(function (result) {
+  console.log("promiseCompose", result);
+});
